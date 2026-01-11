@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sparkflow • Conversation Catalyst</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ===== CSS RESET & VARIABLES ===== */
+        :root {
+            /* Default Theme - Coral */
+            --primary: #FF6B6B;
+            --primary-dark: #FF5252;
+            --secondary: #4ECDC4;
+            --surface: #FFFFFF;
+            --background: #F7F9FC;
+            --text-primary: #292F36;
+            --text-secondary: #5A6169;
+            --text-tertiary: #8A9199;
+            --border: #E1E5EB;
+            --shadow: rgba(41, 47, 54, 0.08);
+            --shadow-strong: rgba(41, 47, 54, 0.12);
+            --success: #4CAF50;
+            --warning: #FF9800;
+            
+            /* Layout */
+            --border-radius: 16px;
+            --border-radius-sm: 8px;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-xxl: 48px;
+            
+            /* Transitions */
+            --transition-fast: 150ms ease;
+            --transition-base: 250ms ease;
+            --transition-slow: 350ms ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            transition: background-color var(--transition-base), color var(--transition-base);
+        }
+
+        /* ===== LAYOUT & CONTAINERS ===== */
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xl);
+            padding-bottom: var(--spacing-xxl);
+        }
+
+        .grid-2-col {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-xl);
+        }
+
+        @media (min-width: 768px) {
+            .grid-2-col {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* ===== TYPOGRAPHY ===== */
+        h1, h2, h3, h4 {
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: var(--spacing-md);
+            color: var(--text-primary);
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xl);
+            max-width: 600px;
+        }
+
+        .question-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            line-height: 1.4;
+            text-align: center;
+            padding: var(--spacing-xl);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--transition-base);
+        }
+
+        @media (min-width: 768px) {
+            .question-text {
+                font-size: 2.5rem;
+                min-height: 300px;
+            }
+        }
+
+        .caption {
+            font-size: 0.875rem;
+            color: var(--text-tertiary);
+        }
+
+        /* ===== HEADER & NAVIGATION ===== */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-lg) 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+
+        /* ===== BUTTONS & CONTROLS ===== */
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            border: none;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-xs);
+            transition: all var(--transition-fast);
+            background-color: var(--surface);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-fab {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            box-shadow: 0 8px 24px var(--shadow-strong);
+            position: fixed;
+            bottom: var(--spacing-xl);
+            right: var(--spacing-xl);
+            z-index: 100;
+            transition: all var(--transition-base);
+        }
+
+        .btn-fab:hover {
+            transform: scale(1.1) translateY(-4px);
+            box-shadow: 0 12px 32px var(--shadow-strong);
+        }
+
+        /* ===== CHIPS & FILTERS ===== */
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .chip {
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .chip.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* ===== CARDS & SURFACES ===== */
+        .card {
+            background-color: var(--surface);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            box-shadow: 0 4px 16px var(--shadow);
+            border: 1px solid var(--border);
+            transition: all var(--transition-base);
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px var(--shadow);
+        }
+
+        .question-card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            min-height: 400px;
+        }
+
+        .controls-card {
+            height: 100%;
+        }
+
+        /* ===== QUESTION DISPLAY AREA ===== */
+        .question-display {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--surface);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 8px 32px var(--shadow);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .question-header {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .question-body {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-xl);
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            min-height: 300px;
+        }
+
+        /* ===== CONTEXT SELECTOR ===== */
+        .context-selector {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .context-pill {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            background-color: var(--surface);
+            border: 2px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .context-pill:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .context-pill.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* ===== FAVORITES LIST ===== */
+        .favorites-container {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: var(--spacing-md);
+            border-radius: var(--border-radius-sm);
+            border: 1px solid var(--border);
+        }
+
+        .favorite-item {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color var(--transition-fast);
+        }
+
+        .favorite-item:hover {
+            background-color: var(--background);
+        }
+
+        .favorite-item:last-child {
+            border-bottom: none;
+        }
+
+        .favorite-text {
+            flex: 1;
+            font-size: 0.875rem;
+        }
+
+        /* ===== TIMER ===== */
+        .timer-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: var(--spacing-lg) 0;
+        }
+
+        .timer-display {
+            font-size: 3rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            margin: var(--spacing-md) 0;
+            color: var(--primary);
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        /* ===== CUSTOMIZATION PANEL ===== */
+        .customization-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 100%;
+            max-width: 380px;
+            height: 100vh;
+            background-color: var(--surface);
+            box-shadow: -4px 0 24px var(--shadow-strong);
+            z-index: 1000;
+            transition: right var(--transition-slow);
+            overflow-y: auto;
+            padding: var(--spacing-xl);
+        }
+
+        .customization-panel.open {
+            right: 0;
+        }
+
+        .customization-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity var(--transition-base);
+        }
+
+        .customization-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .setting-group {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .slider-container {
+            flex: 1;
+            margin-left: var(--spacing-md);
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background-color: var(--border);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-sm);
+        }
+
+        .theme-option {
+            height: 80px;
+            border-radius: var(--border-radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all var(--transition-fast);
+        }
+
+        .theme-option:hover {
+            transform: scale(1.05);
+        }
+
+        .theme-option.active {
+            border-color: var(--primary);
+        }
+
+        /* ===== USER GUIDE ===== */
+        .guide-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .guide-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-right: var(--spacing-md);
+            flex-shrink: 0;
+        }
+
+        /* ===== FOOTER ===== */
+        .app-footer {
+            text-align: center;
+            padding: var(--spacing-xl) 0;
+            border-top: 1px solid var(--border);
+            margin-top: auto;
+            color: var(--text-secondary);
+        }
+
+        /* ===== UTILITY CLASSES ===== */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-sm {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .mb-md {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .mb-lg {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .mt-sm {
+            margin-top: var(--spacing-sm);
+        }
+
+        .mt-md {
+            margin-top: var(--spacing-md);
+        }
+
+        .mt-lg {
+            margin-top: var(--spacing-lg);
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-sm {
+            gap: var(--spacing-sm);
+        }
+
+        .gap-md {
+            gap: var(--spacing-md);
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-20px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn var(--transition-base) forwards;
+        }
+
+        .animate-pulse {
+            animation: pulse 1s ease infinite;
+        }
+
+        .animate-slideIn {
+            animation: slideIn var(--transition-base) forwards;
+        }
+
+        /* ===== RESPONSIVE ADJUSTMENTS ===== */
+        @media (max-width: 768px) {
+            .app-container {
+                padding: var(--spacing-sm);
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .question-text {
+                font-size: 1.5rem;
+                padding: var(--spacing-md);
+            }
+            
+            .btn-fab {
+                bottom: var(--spacing-md);
+                right: var(--spacing-md);
+                width: 56px;
+                height: 56px;
+            }
+            
+            .customization-panel {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div>
+                <h1>Sparkflow</h1>
+                <div class="subtitle">The right question, at the right moment</div>
+            </div>
+            <div class="header-controls">
+                <button class="btn btn-icon" id="themeToggle" title="Change theme">
+                    <i class="fas fa-palette"></i>
+                </button>
+                <button class="btn btn-icon" id="settingsToggle" title="Customize">
+                    <i class="fas fa-sliders-h"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Context Selector -->
+            <section class="context-selector" id="contextSelector">
+                <div class="context-pill active" data-context="any">Any Context</div>
+                <div class="context-pill" data-context="meeting">Meeting</div>
+                <div class="context-pill" data-context="date">Date Night</div>
+                <div class="context-pill" data-context="team">Team Retro</div>
+                <div class="context-pill" data-context="party">Party</div>
+                <div class="context-pill" data-context="family">Family</div>
+            </section>
+
+            <!-- Question Display -->
+            <section class="question-display" id="questionDisplay">
+                <div class="question-header">
+                    <div class="caption" id="questionCategory">Deep & Meaningful</div>
+                    <div class="flex gap-sm">
+                        <button class="btn btn-icon" id="favoriteBtn" title="Add to favorites">
+                            <i class="far fa-heart"></i>
+                        </button>
+                        <button class="btn btn-icon" id="shareBtn" title="Share question">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="question-body" id="questionBody">
+                    <div class="question-text" id="questionText">
+                        What's something you've learned about yourself recently?
+                    </div>
+                </div>
+            </section>
+
+            <!-- Main Controls -->
+            <div class="grid-2-col">
+                <!-- Left Column: Categories & Favorites -->
+                <div class="card controls-card">
+                    <h3>Question Categories</h3>
+                    <div class="chips-container" id="categoryFilters">
+                        <div class="chip active" data-category="all">All</div>
+                        <div class="chip" data-category="deep">Deep</div>
+                        <div class="chip" data-category="funny">Funny</div>
+                        <div class="chip" data-category="work">Work</div>
+                        <div class="chip" data-category="icebreaker">Icebreaker</div>
+                        <div class="chip" data-category="creative">Creative</div>
+                        <div class="chip" data-category="personal">Personal</div>
+                    </div>
+
+                    <h3 class="mt-lg">Favorites <span class="caption" id="favoritesCount">(0)</span></h3>
+                    <div class="favorites-container" id="favoritesList">
+                        <!-- Favorites will be populated here -->
+                    </div>
+                </div>
+
+                <!-- Right Column: Timer & Controls -->
+                <div class="card controls-card">
+                    <h3>Conversation Tools</h3>
+                    
+                    <!-- Timer -->
+                    <div class="timer-container">
+                        <div class="timer-display" id="timerDisplay">05:00</div>
+                        <div class="timer-controls">
+                            <button class="btn" id="timerStart">Start</button>
+                            <button class="btn" id="timerPause">Pause</button>
+                            <button class="btn" id="timerReset">Reset</button>
+                        </div>
+                        <div class="caption mt-sm">
+                            <button class="btn btn-secondary btn-sm" id="quickTimer1">1 min</button>
+                            <button class="btn btn-secondary btn-sm" id="quickTimer3">3 min</button>
+                            <button class="btn btn-secondary btn-sm" id="quickTimer5">5 min</button>
+                        </div>
+                    </div>
+
+                    <!-- Round Mode -->
+                    <div class="setting-group mt-lg">
+                        <h4>Round Mode</h4>
+                        <div class="setting-item">
+                            <span>Pass-around mode for groups</span>
+                            <button class="btn" id="roundModeToggle">Off</button>
+                        </div>
+                        <div class="caption" id="roundStatus">Turn on to pass device between people</div>
+                    </div>
+
+                    <!-- Question History -->
+                    <div class="setting-group mt-lg">
+                        <h4>Recent Questions</h4>
+                        <div class="caption mb-sm" id="historyCount">0 questions asked</div>
+                        <button class="btn btn-primary" id="clearHistory">Clear History</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAB -->
+            <button class="btn-fab" id="sparkFab">
+                <i class="fas fa-bolt"></i>
+            </button>
+
+            <!-- Customization Panel -->
+            <div class="customization-overlay" id="customizationOverlay"></div>
+            <div class="customization-panel" id="customizationPanel">
+                <div class="flex justify-between items-center mb-lg">
+                    <h2>Customize Sparkflow</h2>
+                    <button class="btn btn-icon" id="closeCustomization">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Theme Selection -->
+                <div class="setting-group">
+                    <h3>Themes</h3>
+                    <div class="theme-grid" id="themeGrid">
+                        <!-- Themes will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- UI Settings -->
+                <div class="setting-group">
+                    <h3>Interface</h3>
+                    <div class="setting-item">
+                        <span>Animation Speed</span>
+                        <div class="slider-container">
+                            <input type="range" min="0" max="2" value="1" class="slider" id="animationSpeed">
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <span>Font Size</span>
+                        <div class="slider-container">
+                            <input type="range" min="80" max="120" value="100" class="slider" id="fontSize">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Behavior Settings -->
+                <div class="setting-group">
+                    <h3>Behavior</h3>
+                    <div class="setting-item">
+                        <span>Auto-advance after favorite</span>
+                        <button class="btn" id="autoAdvanceToggle">On</button>
+                    </div>
+                    <div class="setting-item">
+                        <span>Haptic feedback</span>
+                        <button class="btn" id="hapticToggle">On</button>
+                    </div>
+                    <div class="setting-item">
+                        <span>Question history length</span>
+                        <div class="slider-container">
+                            <input type="range" min="5" max="50" value="20" class="slider" id="historyLength">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Management -->
+                <div class="setting-group">
+                    <h3>Data & Backup</h3>
+                    <div class="flex gap-md mb-md">
+                        <button class="btn btn-primary" id="exportData">Export Data</button>
+                        <button class="btn" id="importData">Import Data</button>
+                    </div>
+                    <button class="btn" id="resetSettings">Reset to Defaults</button>
+                </div>
+            </div>
+
+            <!-- User Guide -->
+            <section class="card mt-lg">
+                <h2>User Guide</h2>
+                
+                <div class="guide-section">
+                    <h3>Getting Started</h3>
+                    <div class="guide-step">
+                        <div class="step-number">1</div>
+                        <div>
+                            <strong>Set the context</strong> - Choose your social situation using the context pills above.
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">2</div>
+                        <div>
+                            <strong>Select categories</strong> - Filter questions by type using the category chips.
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">3</div>
+                        <div>
+                            <strong>Tap to spark</strong> - Click any question or the FAB button to generate new questions.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Advanced Features</h3>
+                    <div class="guide-step">
+                        <div class="step-number">1</div>
+                        <div>
+                            <strong>Round Mode</strong> - Turn on Round Mode to pass the device between people in a group.
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">2</div>
+                        <div>
+                            <strong>Timer</strong> - Use the timer to time-box discussions or speed-sharing rounds.
+                        </div>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">3</div>
+                        <div>
+                            <strong>Favorites</strong> - Click the heart icon to save questions for later use.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="guide-section">
+                    <h3>Customization</h3>
+                    <p>Click the settings icon in the top right to:</p>
+                    <ul style="padding-left: var(--spacing-lg); margin-top: var(--spacing-sm);">
+                        <li>Choose from 7 premium themes</li>
+                        <li>Adjust animation speed and font size</li>
+                        <li>Toggle haptic feedback and auto-advance</li>
+                        <li>Export/import your data as JSON files</li>
+                        <li>Reset to default settings</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Made with ❤️ by <a href="https://github.com/Aliriyaj007" target="_blank" style="color: var(--primary); text-decoration: none;">Aliriyaj007</a></p>
+            <p class="caption mt-sm">Sparkflow v1.0 • All data stored locally in your browser</p>
+        </footer>
+    </div>
+
+    <!-- File Input (Hidden) -->
+    <input type="file" id="importFile" accept=".json" style="display: none;">
+
+    <script>
+        // ===== MODULAR JAVASCRIPT ARCHITECTURE =====
+        // Using IIFE pattern to avoid global pollution
+        (function() {
+            'use strict';
+
+            // ===== APP STATE MANAGEMENT =====
+            const AppState = (function() {
+                let state = {
+                    // Current selections
+                    currentCategory: 'all',
+                    currentContext: 'any',
+                    currentQuestion: null,
+                    
+                    // User data
+                    favorites: [],
+                    questionHistory: [],
+                    customQuestions: [],
+                    
+                    // Settings
+                    settings: {
+                        theme: 'coral',
+                        animationSpeed: 1,
+                        fontSize: 100,
+                        autoAdvance: true,
+                        hapticFeedback: true,
+                        historyLength: 20,
+                        roundMode: false
+                    },
+                    
+                    // Timer
+                    timer: {
+                        running: false,
+                        timeRemaining: 300, // 5 minutes in seconds
+                        intervalId: null
+                    },
+                    
+                    // UI state
+                    ui: {
+                        customizationOpen: false
+                    }
+                };
+
+                // Initialize from localStorage
+                function init() {
+                    const saved = localStorage.getItem('sparkflow_state');
+                    if (saved) {
+                        try {
+                            const parsed = JSON.parse(saved);
+                            state = { ...state, ...parsed };
+                        } catch (e) {
+                            console.warn('Failed to load saved state:', e);
+                        }
+                    }
+                }
+
+                // Save to localStorage
+                function save() {
+                    try {
+                        localStorage.setItem('sparkflow_state', JSON.stringify(state));
+                    } catch (e) {
+                        console.warn('Failed to save state:', e);
+                    }
+                }
+
+                // Update state with validation
+                function update(updates) {
+                    state = { ...state, ...updates };
+                    save();
+                }
+
+                // Get current state
+                function get() {
+                    return { ...state };
+                }
+
+                // Reset to defaults
+                function reset() {
+                    state = {
+                        currentCategory: 'all',
+                        currentContext: 'any',
+                        currentQuestion: null,
+                        favorites: [],
+                        questionHistory: [],
+                        customQuestions: [],
+                        settings: {
+                            theme: 'coral',
+                            animationSpeed: 1,
+                            fontSize: 100,
+                            autoAdvance: true,
+                            hapticFeedback: true,
+                            historyLength: 20,
+                            roundMode: false
+                        },
+                        timer: {
+                            running: false,
+                            timeRemaining: 300,
+                            intervalId: null
+                        },
+                        ui: {
+                            customizationOpen: false
+                        }
+                    };
+                    save();
+                    return state;
+                }
+
+                return { init, update, get, reset, save };
+            })();
+
+            // ===== QUESTION ENGINE =====
+            const QuestionEngine = (function() {
+                // Question database
+                const questions = {
+                    deep: [
+                        "What's something you've learned about yourself recently?",
+                        "What does 'success' mean to you?",
+                        "What's a fear you're working to overcome?",
+                        "What's the most valuable lesson a failure taught you?",
+                        "What's a belief you held strongly that has changed?",
+                        "What gives your life meaning right now?",
+                        "What's something you wish you understood better about yourself?",
+                        "What's a quality you admire in others that you're cultivating in yourself?",
+                        "What does 'home' mean to you beyond a physical place?",
+                        "What's a childhood dream you've let go of, and why?"
+                    ],
+                    funny: [
+                        "What's the most ridiculous fact you know?",
+                        "If you had to replace your hands with something, what would it be?",
+                        "What's the worst advice you've ever been given?",
+                        "What's a completely useless skill you have?",
+                        "What would be the title of your autobiography?",
+                        "If animals could talk, which would be the rudest?",
+                        "What's the weirdest thing you've ever eaten?",
+                        "What's something that's considered polite but actually annoys you?",
+                        "What's the most embarrassing fashion trend you participated in?",
+                        "What's a completely irrational fear you have?"
+                    ],
+                    work: [
+                        "What's a recent small win you had?",
+                        "What's one thing we could improve about our meetings?",
+                        "What's a skill you want to develop this quarter?",
+                        "What's something you wish you knew when you started here?",
+                        "What's the best feedback you've ever received?",
+                        "What helps you get into a state of 'flow' at work?",
+                        "What's a process that could be simplified?",
+                        "What's something we should celebrate more often?",
+                        "What's a tool or resource that would make your job easier?",
+                        "What's a professional habit you're trying to build?"
+                    ],
+                    icebreaker: [
+                        "What's the best concert you've ever been to?",
+                        "What's your go-to karaoke song?",
+                        "What's a book/movie that changed your perspective?",
+                        "What's your favorite way to spend a weekend?",
+                        "What's a hobby you'd like to try?",
+                        "What's the most interesting place you've visited?",
+                        "What's something you're oddly passionate about?",
+                        "What's your favorite family tradition?",
+                        "What's a skill you'd love to master?",
+                        "What's the best meal you've ever had?"
+                    ],
+                    creative: [
+                        "If you could master any art form instantly, what would it be?",
+                        "What's a creative project you've been thinking about?",
+                        "What color best represents your current mood and why?",
+                        "If your life was a movie, what genre would it be?",
+                        "What's a metaphor for how you're feeling right now?",
+                        "If you could create a new holiday, what would it celebrate?",
+                        "What's an ordinary object that inspires you?",
+                        "What creative work have you encountered recently that moved you?",
+                        "If you could collaborate with any artist, living or dead, who would it be?",
+                        "What's a creative constraint that actually helps you?"
+                    ],
+                    personal: [
+                        "What's something you're grateful for today?",
+                        "What's a boundary you've set recently that's helped you?",
+                        "What's a compliment you received that stuck with you?",
+                        "What's something you're looking forward to?",
+                        "What's a small joy you experienced this week?",
+                        "What's a personal goal you're working toward?",
+                        "What's something you've forgiven yourself for?",
+                        "What's a relationship in your life that's grown recently?",
+                        "What's a self-care practice that works for you?",
+                        "What's something you've unlearned recently?"
+                    ]
+                };
+
+                // Context mappings
+                const contextMappings = {
+                    meeting: ['work', 'icebreaker'],
+                    date: ['deep', 'personal', 'funny'],
+                    team: ['work', 'creative', 'icebreaker'],
+                    party: ['funny', 'icebreaker', 'creative'],
+                    family: ['personal', 'funny', 'deep'],
+                    any: ['deep', 'funny', 'work', 'icebreaker', 'creative', 'personal']
+                };
+
+                // Get filtered questions based on category and context
+                function getFilteredQuestions(category, context) {
+                    const state = AppState.get();
+                    const history = state.questionHistory;
+                    
+                    let questionPool = [];
+                    
+                    if (category === 'all') {
+                        // Get questions from all categories relevant to context
+                        const categories = contextMappings[context] || Object.keys(questions);
+                        categories.forEach(cat => {
+                            if (questions[cat]) {
+                                questionPool = questionPool.concat(questions[cat].map(q => ({ text: q, category: cat })));
+                            }
+                        });
+                    } else if (questions[category]) {
+                        questionPool = questions[category].map(q => ({ text: q, category }));
+                    }
+                    
+                    // Add custom questions
+                    if (state.customQuestions && state.customQuestions.length > 0) {
+                        const custom = state.customQuestions
+                            .filter(q => category === 'all' || q.category === category)
+                            .map(q => ({ text: q.text, category: q.category, custom: true }));
+                        questionPool = questionPool.concat(custom);
+                    }
+                    
+                    // Filter out recently asked questions
+                    const recentTexts = history.map(h => h.text);
+                    const available = questionPool.filter(q => !recentTexts.includes(q.text));
+                    
+                    // If all questions have been asked, reset the filter
+                    return available.length > 0 ? available : questionPool;
+                }
+
+                // Get random question
+                function getRandomQuestion(category = 'all', context = 'any') {
+                    const filtered = getFilteredQuestions(category, context);
+                    if (filtered.length === 0) return null;
+                    
+                    const randomIndex = Math.floor(Math.random() * filtered.length);
+                    return filtered[randomIndex];
+                }
+
+                // Add custom question
+                function addCustomQuestion(text, category) {
+                    const state = AppState.get();
+                    const newQuestion = { text, category, id: Date.now() };
+                    state.customQuestions.push(newQuestion);
+                    AppState.update({ customQuestions: state.customQuestions });
+                    return newQuestion;
+                }
+
+                return {
+                    getRandomQuestion,
+                    getFilteredQuestions,
+                    addCustomQuestion,
+                    getAllCategories: () => Object.keys(questions)
+                };
+            })();
+
+            // ===== THEME SYSTEM =====
+            const ThemeSystem = (function() {
+                // 7 Premium Themes
+                const themes = {
+                    coral: {
+                        name: 'Coral Bliss',
+                        primary: '#FF6B6B',
+                        primaryDark: '#FF5252',
+                        secondary: '#4ECDC4',
+                        surface: '#FFFFFF',
+                        background: '#F7F9FC',
+                        textPrimary: '#292F36',
+                        textSecondary: '#5A6169',
+                        border: '#E1E5EB'
+                    },
+                    midnight: {
+                        name: 'Midnight Sky',
+                        primary: '#6C63FF',
+                        primaryDark: '#574FD1',
+                        secondary: '#36D1DC',
+                        surface: '#1A1A2E',
+                        background: '#0F0F1A',
+                        textPrimary: '#E6E6E6',
+                        textSecondary: '#A0A0A0',
+                        border: '#2D2D44'
+                    },
+                    forest: {
+                        name: 'Forest Depth',
+                        primary: '#2E8B57',
+                        primaryDark: '#267349',
+                        secondary: '#98D8C8',
+                        surface: '#FFFFFF',
+                        background: '#F0F7F4',
+                        textPrimary: '#1A3C2E',
+                        textSecondary: '#4A6B5C',
+                        border: '#C8D9D3'
+                    },
+                    sunset: {
+                        name: 'Sunset Glow',
+                        primary: '#FF8E53',
+                        primaryDark: '#FF7A3D',
+                        secondary: '#FFCE63',
+                        surface: '#FFF9F0',
+                        background: '#FFFAF5',
+                        textPrimary: '#2C1810',
+                        textSecondary: '#5C4A42',
+                        border: '#FFE4CC'
+                    },
+                    ocean: {
+                        name: 'Ocean Depth',
+                        primary: '#2D9CDB',
+                        primaryDark: '#2684C1',
+                        secondary: '#56CCF2',
+                        surface: '#FFFFFF',
+                        background: '#E3F2FD',
+                        textPrimary: '#0D3C61',
+                        textSecondary: '#4A6B8A',
+                        border: '#BBDEFB'
+                    },
+                    lavender: {
+                        name: 'Lavender Dream',
+                        primary: '#9B59B6',
+                        primaryDark: '#8E44AD',
+                        secondary: '#BB8FCE',
+                        surface: '#FFFFFF',
+                        background: '#F9F0FF',
+                        textPrimary: '#2C0E37',
+                        textSecondary: '#5C4A5E',
+                        border: '#E8DAEF'
+                    },
+                    slate: {
+                        name: 'Slate Professional',
+                        primary: '#607D8B',
+                        primaryDark: '#546E7A',
+                        secondary: '#90A4AE',
+                        surface: '#FFFFFF',
+                        background: '#F5F7FA',
+                        textPrimary: '#263238',
+                        textSecondary: '#546E7A',
+                        border: '#CFD8DC'
+                    }
+                };
+
+                // Apply theme to CSS variables
+                function applyTheme(themeName) {
+                    const theme = themes[themeName] || themes.coral;
+                    const root = document.documentElement;
+                    
+                    root.style.setProperty('--primary', theme.primary);
+                    root.style.setProperty('--primary-dark', theme.primaryDark);
+                    root.style.setProperty('--secondary', theme.secondary);
+                    root.style.setProperty('--surface', theme.surface);
+                    root.style.setProperty('--background', theme.background);
+                    root.style.setProperty('--text-primary', theme.textPrimary);
+                    root.style.setProperty('--text-secondary', theme.textSecondary);
+                    root.style.setProperty('--text-tertiary', theme.textSecondary + 'AA');
+                    root.style.setProperty('--border', theme.border);
+                    
+                    // Update shadow colors based on theme
+                    const shadowColor = theme.textPrimary + '14'; // 8% opacity
+                    const shadowStrong = theme.textPrimary + '1F'; // 12% opacity
+                    root.style.setProperty('--shadow', shadowColor);
+                    root.style.setProperty('--shadow-strong', shadowStrong);
+                }
+
+                // Get all themes
+                function getAllThemes() {
+                    return themes;
+                }
+
+                // Initialize theme from state
+                function init() {
+                    const state = AppState.get();
+                    applyTheme(state.settings.theme);
+                }
+
+                return { applyTheme, getAllThemes, init };
+            })();
+
+            // ===== UI MANAGER =====
+            const UIManager = (function() {
+                // DOM Elements cache
+                const elements = {};
+
+                // Initialize UI elements
+                function init() {
+                    // Cache commonly used elements
+                    elements.questionText = document.getElementById('questionText');
+                    elements.questionBody = document.getElementById('questionBody');
+                    elements.categoryFilters = document.getElementById('categoryFilters');
+                    elements.contextSelector = document.getElementById('contextSelector');
+                    elements.favoritesList = document.getElementById('favoritesList');
+                    elements.favoritesCount = document.getElementById('favoritesCount');
+                    elements.favoriteBtn = document.getElementById('favoriteBtn');
+                    elements.sparkFab = document.getElementById('sparkFab');
+                    elements.themeToggle = document.getElementById('themeToggle');
+                    elements.settingsToggle = document.getElementById('settingsToggle');
+                    elements.customizationPanel = document.getElementById('customizationPanel');
+                    elements.customizationOverlay = document.getElementById('customizationOverlay');
+                    elements.closeCustomization = document.getElementById('closeCustomization');
+                    elements.themeGrid = document.getElementById('themeGrid');
+                    elements.timerDisplay = document.getElementById('timerDisplay');
+                    elements.timerStart = document.getElementById('timerStart');
+                    elements.timerPause = document.getElementById('timerPause');
+                    elements.timerReset = document.getElementById('timerReset');
+                    elements.quickTimer1 = document.getElementById('quickTimer1');
+                    elements.quickTimer3 = document.getElementById('quickTimer3');
+                    elements.quickTimer5 = document.getElementById('quickTimer5');
+                    elements.roundModeToggle = document.getElementById('roundModeToggle');
+                    elements.roundStatus = document.getElementById('roundStatus');
+                    elements.clearHistory = document.getElementById('clearHistory');
+                    elements.historyCount = document.getElementById('historyCount');
+                    elements.exportData = document.getElementById('exportData');
+                    elements.importData = document.getElementById('importData');
+                    elements.importFile = document.getElementById('importFile');
+                    elements.resetSettings = document.getElementById('resetSettings');
+                    elements.animationSpeed = document.getElementById('animationSpeed');
+                    elements.fontSize = document.getElementById('fontSize');
+                    elements.historyLength = document.getElementById('historyLength');
+                    elements.autoAdvanceToggle = document.getElementById('autoAdvanceToggle');
+                    elements.hapticToggle = document.getElementById('hapticToggle');
+
+                    // Load themes into grid
+                    loadThemes();
+                    
+                    // Update UI from state
+                    updateFromState();
+                }
+
+                // Update UI from app state
+                function updateFromState() {
+                    const state = AppState.get();
+                    
+                    // Update favorites
+                    updateFavoritesList();
+                    
+                    // Update timer
+                    updateTimerDisplay();
+                    
+                    // Update settings toggles
+                    updateToggleButtons();
+                    
+                    // Update question history count
+                    elements.historyCount.textContent = `${state.questionHistory.length} questions asked`;
+                    
+                    // Apply font size
+                    document.documentElement.style.fontSize = `${state.settings.fontSize}%`;
+                }
+
+                // Update favorites list
+                function updateFavoritesList() {
+                    const state = AppState.get();
+                    const favorites = state.favorites;
+                    
+                    elements.favoritesList.innerHTML = '';
+                    elements.favoritesCount.textContent = `(${favorites.length})`;
+                    
+                    if (favorites.length === 0) {
+                        const emptyMsg = document.createElement('div');
+                        emptyMsg.className = 'favorite-item';
+                        emptyMsg.textContent = 'No favorites yet. Click the heart to add some!';
+                        elements.favoritesList.appendChild(emptyMsg);
+                        return;
+                    }
+                    
+                    favorites.forEach((fav, index) => {
+                        const item = document.createElement('div');
+                        item.className = 'favorite-item';
+                        item.innerHTML = `
+                            <div class="favorite-text">${fav.text}</div>
+                            <div class="flex gap-sm">
+                                <button class="btn btn-icon btn-sm" data-index="${index}" data-action="ask-favorite">
+                                    <i class="fas fa-bolt"></i>
+                                </button>
+                                <button class="btn btn-icon btn-sm" data-index="${index}" data-action="remove-favorite">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `;
+                        elements.favoritesList.appendChild(item);
+                    });
+                }
+
+                // Update timer display
+                function updateTimerDisplay() {
+                    const state = AppState.get();
+                    const timer = state.timer;
+                    
+                    const minutes = Math.floor(timer.timeRemaining / 60);
+                    const seconds = timer.timeRemaining % 60;
+                    
+                    elements.timerDisplay.textContent = 
+                        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    
+                    // Update button states
+                    elements.timerStart.textContent = timer.running ? 'Pause' : 'Start';
+                    elements.timerStart.classList.toggle('btn-primary', !timer.running);
+                    elements.timerPause.disabled = !timer.running;
+                }
+
+                // Update toggle buttons
+                function updateToggleButtons() {
+                    const state = AppState.get();
+                    
+                    elements.autoAdvanceToggle.textContent = state.settings.autoAdvance ? 'On' : 'Off';
+                    elements.hapticToggle.textContent = state.settings.hapticFeedback ? 'On' : 'Off';
+                    elements.roundModeToggle.textContent = state.settings.roundMode ? 'On' : 'Off';
+                    elements.roundStatus.textContent = state.settings.roundMode ? 
+                        'Round mode active! Pass device to next person.' : 
+                        'Turn on to pass device between people';
+                    
+                    // Update sliders
+                    elements.animationSpeed.value = state.settings.animationSpeed;
+                    elements.fontSize.value = state.settings.fontSize;
+                    elements.historyLength.value = state.settings.historyLength;
+                }
+
+                // Load themes into grid
+                function loadThemes() {
+                    const themes = ThemeSystem.getAllThemes();
+                    const state = AppState.get();
+                    const currentTheme = state.settings.theme;
+                    
+                    elements.themeGrid.innerHTML = '';
+                    
+                    Object.entries(themes).forEach(([key, theme]) => {
+                        const themeOption = document.createElement('div');
+                        themeOption.className = `theme-option ${key === currentTheme ? 'active' : ''}`;
+                        themeOption.dataset.theme = key;
+                        themeOption.style.backgroundColor = theme.primary;
+                        themeOption.style.backgroundImage = `linear-gradient(135deg, ${theme.primary}, ${theme.secondary})`;
+                        themeOption.title = theme.name;
+                        
+                        // Add checkmark for active theme
+                        if (key === currentTheme) {
+                            themeOption.innerHTML = '<i class="fas fa-check" style="color: white;"></i>';
+                        }
+                        
+                        elements.themeGrid.appendChild(themeOption);
+                    });
+                }
+
+                // Show question with animation
+                function showQuestion(question) {
+                    if (!question) return;
+                    
+                    const state = AppState.get();
+                    
+                    // Add to history (with limit)
+                    let history = [...state.questionHistory, question];
+                    if (history.length > state.settings.historyLength) {
+                        history = history.slice(-state.settings.historyLength);
+                    }
+                    
+                    AppState.update({ 
+                        currentQuestion: question,
+                        questionHistory: history
+                    });
+                    
+                    // Update UI
+                    elements.questionText.textContent = question.text;
+                    elements.questionText.className = 'question-text animate-fadeIn';
+                    
+                    // Update category display
+                    const categoryDisplay = question.category.charAt(0).toUpperCase() + question.category.slice(1);
+                    document.getElementById('questionCategory').textContent = categoryDisplay;
+                    
+                    // Update favorite button
+                    updateFavoriteButton(question);
+                    
+                    // Update history count
+                    elements.historyCount.textContent = `${history.length} questions asked`;
+                    
+                    // Haptic feedback
+                    if (state.settings.hapticFeedback && navigator.vibrate) {
+                        navigator.vibrate(50);
+                    }
+                }
+
+                // Update favorite button state
+                function updateFavoriteButton(question) {
+                    const state = AppState.get();
+                    const isFavorite = state.favorites.some(fav => fav.text === question.text);
+                    
+                    elements.favoriteBtn.innerHTML = isFavorite ? 
+                        '<i class="fas fa-heart" style="color: var(--primary);"></i>' : 
+                        '<i class="far fa-heart"></i>';
+                    elements.favoriteBtn.title = isFavorite ? 'Remove from favorites' : 'Add to favorites';
+                }
+
+                // Toggle customization panel
+                function toggleCustomization(open) {
+                    elements.customizationPanel.classList.toggle('open', open);
+                    elements.customizationOverlay.classList.toggle('open', open);
+                    AppState.update({ ui: { customizationOpen: open } });
+                }
+
+                // Show notification
+                function showNotification(message, type = 'info') {
+                    // Create notification element
+                    const notification = document.createElement('div');
+                    notification.className = `card animate-slideIn`;
+                    notification.style.cssText = `
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        z-index: 1001;
+                        max-width: 300px;
+                        background-color: var(--surface);
+                        border-left: 4px solid ${type === 'success' ? 'var(--success)' : 'var(--primary)'};
+                    `;
+                    
+                    notification.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}" 
+                               style="color: ${type === 'success' ? 'var(--success)' : 'var(--primary)'};"></i>
+                            <span>${message}</span>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(notification);
+                    
+                    // Remove after 3 seconds
+                    setTimeout(() => {
+                        notification.style.opacity = '0';
+                        notification.style.transform = 'translateX(20px)';
+                        setTimeout(() => {
+                            if (notification.parentNode) {
+                                document.body.removeChild(notification);
+                            }
+                        }, 300);
+                    }, 3000);
+                }
+
+                return {
+                    init,
+                    elements,
+                    updateFromState,
+                    showQuestion,
+                    toggleCustomization,
+                    showNotification,
+                    updateTimerDisplay,
+                    updateFavoritesList
+                };
+            })();
+
+            // ===== EVENT HANDLERS =====
+            const EventManager = (function() {
+                function init() {
+                    const ui = UIManager.elements;
+                    const state = AppState.get();
+                    
+                    // Question body click (new question)
+                    ui.questionBody.addEventListener('click', () => {
+                        const state = AppState.get();
+                        const question = QuestionEngine.getRandomQuestion(
+                            state.currentCategory, 
+                            state.currentContext
+                        );
+                        if (question) {
+                            UIManager.showQuestion(question);
+                        }
+                    });
+                    
+                    // Category filter clicks
+                    ui.categoryFilters.addEventListener('click', (e) => {
+                        const chip = e.target.closest('.chip');
+                        if (!chip) return;
+                        
+                        // Update active chip
+                        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                        chip.classList.add('active');
+                        
+                        // Update state
+                        const category = chip.dataset.category;
+                        AppState.update({ currentCategory: category });
+                        
+                        // Get new question
+                        const question = QuestionEngine.getRandomQuestion(category, state.currentContext);
+                        if (question) {
+                            UIManager.showQuestion(question);
+                        }
+                    });
+                    
+                    // Context selector clicks
+                    ui.contextSelector.addEventListener('click', (e) => {
+                        const pill = e.target.closest('.context-pill');
+                        if (!pill) return;
+                        
+                        // Update active pill
+                        document.querySelectorAll('.context-pill').forEach(p => p.classList.remove('active'));
+                        pill.classList.add('active');
+                        
+                        // Update state
+                        const context = pill.dataset.context;
+                        AppState.update({ currentContext: context });
+                        
+                        // Get new question
+                        const question = QuestionEngine.getRandomQuestion(state.currentCategory, context);
+                        if (question) {
+                            UIManager.showQuestion(question);
+                        }
+                    });
+                    
+                    // Favorite button
+                    ui.favoriteBtn.addEventListener('click', () => {
+                        const state = AppState.get();
+                        const question = state.currentQuestion;
+                        if (!question) return;
+                        
+                        const isFavorite = state.favorites.some(fav => fav.text === question.text);
+                        
+                        let newFavorites;
+                        if (isFavorite) {
+                            // Remove from favorites
+                            newFavorites = state.favorites.filter(fav => fav.text !== question.text);
+                            UIManager.showNotification('Removed from favorites', 'info');
+                        } else {
+                            // Add to favorites
+                            newFavorites = [...state.favorites, question];
+                            UIManager.showNotification('Added to favorites!', 'success');
+                        }
+                        
+                        AppState.update({ favorites: newFavorites });
+                        UIManager.updateFavoritesList();
+                        UIManager.updateFavoriteButton(question);
+                        
+                        // Auto-advance if enabled
+                        if (state.settings.autoAdvance && !isFavorite) {
+                            setTimeout(() => {
+                                const newQuestion = QuestionEngine.getRandomQuestion(
+                                    state.currentCategory, 
+                                    state.currentContext
+                                );
+                                if (newQuestion) {
+                                    UIManager.showQuestion(newQuestion);
+                                }
+                            }, 500);
+                        }
+                    });
+                    
+                    // Favorites list interactions
+                    ui.favoritesList.addEventListener('click', (e) => {
+                        const button = e.target.closest('button');
+                        if (!button) return;
+                        
+                        const action = button.dataset.action;
+                        const index = parseInt(button.dataset.index);
+                        const state = AppState.get();
+                        
+                        if (action === 'ask-favorite' && state.favorites[index]) {
+                            UIManager.showQuestion(state.favorites[index]);
+                        } else if (action === 'remove-favorite') {
+                            const newFavorites = [...state.favorites];
+                            newFavorites.splice(index, 1);
+                            AppState.update({ favorites: newFavorites });
+                            UIManager.updateFavoritesList();
+                            UIManager.showNotification('Removed from favorites', 'info');
+                        }
+                    });
+                    
+                    // Spark FAB
+                    ui.sparkFab.addEventListener('click', () => {
+                        const state = AppState.get();
+                        const question = QuestionEngine.getRandomQuestion(
+                            state.currentCategory, 
+                            state.currentContext
+                        );
+                        if (question) {
+                            UIManager.showQuestion(question);
+                        }
+                    });
+                    
+                    // Theme toggle
+                    ui.themeToggle.addEventListener('click', () => {
+                        UIManager.toggleCustomization(true);
+                    });
+                    
+                    // Settings toggle
+                    ui.settingsToggle.addEventListener('click', () => {
+                        UIManager.toggleCustomization(true);
+                    });
+                    
+                    // Close customization
+                    ui.closeCustomization.addEventListener('click', () => {
+                        UIManager.toggleCustomization(false);
+                    });
+                    
+                    ui.customizationOverlay.addEventListener('click', () => {
+                        UIManager.toggleCustomization(false);
+                    });
+                    
+                    // Theme selection
+                    ui.themeGrid.addEventListener('click', (e) => {
+                        const themeOption = e.target.closest('.theme-option');
+                        if (!themeOption) return;
+                        
+                        const themeName = themeOption.dataset.theme;
+                        ThemeSystem.applyTheme(themeName);
+                        AppState.update({ settings: { ...AppState.get().settings, theme: themeName } });
+                        
+                        // Update active theme in grid
+                        document.querySelectorAll('.theme-option').forEach(opt => {
+                            opt.classList.remove('active');
+                            opt.innerHTML = '';
+                        });
+                        themeOption.classList.add('active');
+                        themeOption.innerHTML = '<i class="fas fa-check" style="color: white;"></i>';
+                        
+                        UIManager.showNotification(`Theme applied: ${themeOption.title}`, 'success');
+                    });
+                    
+                    // Timer controls
+                    ui.timerStart.addEventListener('click', toggleTimer);
+                    ui.timerPause.addEventListener('click', pauseTimer);
+                    ui.timerReset.addEventListener('click', resetTimer);
+                    
+                    // Quick timers
+                    ui.quickTimer1.addEventListener('click', () => setTimer(60));
+                    ui.quickTimer3.addEventListener('click', () => setTimer(180));
+                    ui.quickTimer5.addEventListener('click', () => setTimer(300));
+                    
+                    // Round mode toggle
+                    ui.roundModeToggle.addEventListener('click', () => {
+                        const state = AppState.get();
+                        const newRoundMode = !state.settings.roundMode;
+                        AppState.update({ settings: { ...state.settings, roundMode: newRoundMode } });
+                        UIManager.updateFromState();
+                        
+                        if (newRoundMode) {
+                            UIManager.showNotification('Round mode activated! Pass device to next person.', 'success');
+                        }
+                    });
+                    
+                    // Clear history
+                    ui.clearHistory.addEventListener('click', () => {
+                        if (confirm('Clear all question history? This cannot be undone.')) {
+                            AppState.update({ questionHistory: [] });
+                            UIManager.updateFromState();
+                            UIManager.showNotification('History cleared', 'info');
+                        }
+                    });
+                    
+                    // Export data
+                    ui.exportData.addEventListener('click', exportData);
+                    
+                    // Import data
+                    ui.importData.addEventListener('click', () => {
+                        ui.importFile.click();
+                    });
+                    
+                    ui.importFile.addEventListener('change', importData);
+                    
+                    // Reset settings
+                    ui.resetSettings.addEventListener('click', () => {
+                        if (confirm('Reset all settings and data to defaults? This cannot be undone.')) {
+                            AppState.reset();
+                            ThemeSystem.init();
+                            UIManager.updateFromState();
+                            UIManager.loadThemes();
+                            UIManager.showNotification('All settings reset to defaults', 'info');
+                        }
+                    });
+                    
+                    // Settings sliders
+                    ui.animationSpeed.addEventListener('input', (e) => {
+                        const speed = parseFloat(e.target.value);
+                        AppState.update({ settings: { ...AppState.get().settings, animationSpeed: speed } });
+                    });
+                    
+                    ui.fontSize.addEventListener('input', (e) => {
+                        const size = parseInt(e.target.value);
+                        AppState.update({ settings: { ...AppState.get().settings, fontSize: size } });
+                        document.documentElement.style.fontSize = `${size}%`;
+                    });
+                    
+                    ui.historyLength.addEventListener('input', (e) => {
+                        const length = parseInt(e.target.value);
+                        AppState.update({ settings: { ...AppState.get().settings, historyLength: length } });
+                    });
+                    
+                    // Toggle buttons
+                    ui.autoAdvanceToggle.addEventListener('click', () => {
+                        const state = AppState.get();
+                        const newValue = !state.settings.autoAdvance;
+                        AppState.update({ settings: { ...state.settings, autoAdvance: newValue } });
+                        UIManager.updateFromState();
+                    });
+                    
+                    ui.hapticToggle.addEventListener('click', () => {
+                        const state = AppState.get();
+                        const newValue = !state.settings.hapticFeedback;
+                        AppState.update({ settings: { ...state.settings, hapticFeedback: newValue } });
+                        UIManager.updateFromState();
+                    });
+                    
+                    // Keyboard shortcuts
+                    document.addEventListener('keydown', (e) => {
+                        // Space for new question
+                        if (e.code === 'Space' && !e.target.closest('input, textarea, button')) {
+                            e.preventDefault();
+                            const state = AppState.get();
+                            const question = QuestionEngine.getRandomQuestion(
+                                state.currentCategory, 
+                                state.currentContext
+                            );
+                            if (question) {
+                                UIManager.showQuestion(question);
+                            }
+                        }
+                        
+                        // Escape to close customization
+                        if (e.code === 'Escape' && AppState.get().ui.customizationOpen) {
+                            UIManager.toggleCustomization(false);
+                        }
+                        
+                        // 1-6 for category shortcuts
+                        if (e.code >= 'Digit1' && e.code <= 'Digit6' && !e.target.closest('input, textarea')) {
+                            const categories = ['all', 'deep', 'funny', 'work', 'icebreaker', 'creative'];
+                            const index = parseInt(e.code.replace('Digit', '')) - 1;
+                            if (categories[index]) {
+                                const chips = document.querySelectorAll('.chip');
+                                chips.forEach(c => c.classList.remove('active'));
+                                chips[index].classList.add('active');
+                                
+                                AppState.update({ currentCategory: categories[index] });
+                                const question = QuestionEngine.getRandomQuestion(categories[index], AppState.get().currentContext);
+                                if (question) {
+                                    UIManager.showQuestion(question);
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                // Timer functions
+                function toggleTimer() {
+                    const state = AppState.get();
+                    const timer = state.timer;
+                    
+                    if (timer.running) {
+                        // Pause timer
+                        clearInterval(timer.intervalId);
+                        AppState.update({ 
+                            timer: { ...timer, running: false, intervalId: null }
+                        });
+                    } else {
+                        // Start timer
+                        const intervalId = setInterval(() => {
+                            const state = AppState.get();
+                            const timer = state.timer;
+                            
+                            if (timer.timeRemaining <= 0) {
+                                clearInterval(timer.intervalId);
+                                AppState.update({ 
+                                    timer: { ...timer, running: false, intervalId: null }
+                                });
+                                UIManager.showNotification('Time\'s up!', 'success');
+                                if (state.settings.hapticFeedback && navigator.vibrate) {
+                                    navigator.vibrate([200, 100, 200]);
+                                }
+                            } else {
+                                AppState.update({ 
+                                    timer: { ...timer, timeRemaining: timer.timeRemaining - 1 }
+                                });
+                            }
+                            
+                            UIManager.updateTimerDisplay();
+                        }, 1000);
+                        
+                        AppState.update({ 
+                            timer: { ...timer, running: true, intervalId }
+                        });
+                    }
+                    
+                    UIManager.updateTimerDisplay();
+                }
+                
+                function pauseTimer() {
+                    const state = AppState.get();
+                    const timer = state.timer;
+                    
+                    if (timer.running) {
+                        clearInterval(timer.intervalId);
+                        AppState.update({ 
+                            timer: { ...timer, running: false, intervalId: null }
+                        });
+                        UIManager.updateTimerDisplay();
+                    }
+                }
+                
+                function resetTimer() {
+                    const state = AppState.get();
+                    const timer = state.timer;
+                    
+                    if (timer.running) {
+                        clearInterval(timer.intervalId);
+                    }
+                    
+                    AppState.update({ 
+                        timer: { running: false, timeRemaining: 300, intervalId: null }
+                    });
+                    UIManager.updateTimerDisplay();
+                }
+                
+                function setTimer(seconds) {
+                    const state = AppState.get();
+                    const timer = state.timer;
+                    
+                    if (timer.running) {
+                        clearInterval(timer.intervalId);
+                    }
+                    
+                    AppState.update({ 
+                        timer: { running: false, timeRemaining: seconds, intervalId: null }
+                    });
+                    UIManager.updateTimerDisplay();
+                    UIManager.showNotification(`Timer set to ${Math.floor(seconds/60)}:${(seconds%60).toString().padStart(2, '0')}`, 'info');
+                }
+                
+                // Export data
+                function exportData() {
+                    const state = AppState.get();
+                    const exportData = {
+                        version: '1.0',
+                        exportDate: new Date().toISOString(),
+                        favorites: state.favorites,
+                        customQuestions: state.customQuestions,
+                        settings: state.settings,
+                        questionHistory: state.questionHistory
+                    };
+                    
+                    const dataStr = JSON.stringify(exportData, null, 2);
+                    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                    const url = URL.createObjectURL(dataBlob);
+                    
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `sparkflow-backup-${new Date().toISOString().split('T')[0]}.json`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    
+                    UIManager.showNotification('Data exported successfully!', 'success');
+                }
+                
+                // Import data
+                function importData(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        try {
+                            const imported = JSON.parse(event.target.result);
+                            
+                            // Validate import structure
+                            if (!imported.favorites || !imported.settings || !imported.version) {
+                                throw new Error('Invalid backup file format');
+                            }
+                            
+                            if (confirm('Import this backup? This will replace your current data.')) {
+                                const currentState = AppState.get();
+                                AppState.update({
+                                    favorites: imported.favorites || currentState.favorites,
+                                    customQuestions: imported.customQuestions || currentState.customQuestions,
+                                    settings: imported.settings || currentState.settings,
+                                    questionHistory: imported.questionHistory || currentState.questionHistory
+                                });
+                                
+                                // Apply imported theme
+                                if (imported.settings.theme) {
+                                    ThemeSystem.applyTheme(imported.settings.theme);
+                                }
+                                
+                                UIManager.updateFromState();
+                                UIManager.loadThemes();
+                                UIManager.showNotification('Data imported successfully!', 'success');
+                            }
+                        } catch (error) {
+                            console.error('Import error:', error);
+                            alert('Error importing backup file. Please make sure it\'s a valid Sparkflow backup.');
+                        }
+                        
+                        // Reset file input
+                        e.target.value = '';
+                    };
+                    reader.readAsText(file);
+                }
+                
+                return { init };
+            })();
+
+            // ===== INITIALIZATION =====
+            function initApp() {
+                // Initialize modules
+                AppState.init();
+                ThemeSystem.init();
+                UIManager.init();
+                EventManager.init();
+                
+                // Load initial question
+                const state = AppState.get();
+                const initialQuestion = QuestionEngine.getRandomQuestion(state.currentCategory, state.currentContext);
+                if (initialQuestion) {
+                    UIManager.showQuestion(initialQuestion);
+                }
+                
+                // Show welcome message
+                setTimeout(() => {
+                    if (AppState.get().questionHistory.length === 1) {
+                        UIManager.showNotification('Welcome to Sparkflow! Tap anywhere for a new question.', 'info');
+                    }
+                }, 1000);
+            }
+
+            // Start the app when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initApp);
+            } else {
+                initApp();
+            }
+        })();
+    </script>
+</body>
+</html>
